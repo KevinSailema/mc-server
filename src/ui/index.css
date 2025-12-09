@@ -226,11 +226,23 @@ html, body {
   backdrop-filter: blur(20px);
   border: 1px solid var(--accent);
   border-radius: 20px;
-  padding: 2.5rem 2rem;
+  padding: 1.5rem 1.25rem;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
   box-shadow: 0 10px 40px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.05) inset;
+}
+
+@media (min-width: 640px) {
+  .glass-panel {
+    padding: 2rem 1.75rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .glass-panel {
+    padding: 2.5rem 2rem;
+  }
 }
 
 .glass-panel::after {
@@ -297,15 +309,15 @@ html, body {
   padding-top: 48px;
 }
 
-.pills { display:flex; gap:0.5rem; justify-content:center; margin-top:0.75rem; flex-wrap: wrap }
+.pills { display:flex; gap:0.5rem; justify-content:center; margin-top:0.75rem; flex-wrap: wrap; padding: 0 0.5rem }
 .pill {
   display: inline-block;
-  padding: 0.6rem 1.4rem;
+  padding: 0.5rem 1rem;
   background: var(--bg-panel);
   border: 2px solid var(--accent);
   border-radius: 50px;
   color: var(--text-main);
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   font-weight: 600;
   letter-spacing: 0.3px;
   transition: all 0.3s ease;
@@ -314,6 +326,13 @@ html, body {
     0 0 0 1px rgba(255,255,255,0.1) inset;
   position: relative;
   overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .pill {
+    padding: 0.6rem 1.4rem;
+    font-size: 0.95rem;
+  }
 }
 
 .pill::before {
@@ -348,12 +367,25 @@ html, body {
   background: var(--bg-panel);
   backdrop-filter: blur(24px);
   border: 1px solid var(--accent);
-  border-radius: 24px;
-  padding: 2.5rem 2rem;
+  border-radius: 20px;
+  padding: 1.5rem 1rem;
   box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.05) inset, 0 0 80px var(--accent);
   position: relative;
   overflow: hidden;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (min-width: 640px) {
+  .big-panel {
+    padding: 2rem 1.5rem;
+    border-radius: 24px;
+  }
+}
+
+@media (min-width: 768px) {
+  .big-panel {
+    padding: 2.5rem 2rem;
+  }
 }
 
 .big-panel::before {
@@ -400,8 +432,8 @@ html, body {
 
 .inner-box {
   background: var(--bg-main);
-  border-radius: 18px;
-  padding: 2rem;
+  border-radius: 16px;
+  padding: 1.25rem;
   border: 1.5px solid var(--accent);
   position: relative;
   overflow: hidden;
@@ -412,6 +444,19 @@ html, body {
     0 0 30px rgba(139,92,246,0.12);
   will-change: transform;
   backdrop-filter: blur(10px);
+}
+
+@media (min-width: 640px) {
+  .inner-box {
+    padding: 1.75rem;
+    border-radius: 18px;
+  }
+}
+
+@media (min-width: 768px) {
+  .inner-box {
+    padding: 2rem;
+  }
 }
 
 .inner-box::before {
@@ -446,15 +491,23 @@ html, body {
 .ip-badge-large {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px 24px;
-  border-radius: 16px;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 12px;
   background: var(--bg-panel);
   border: 2px solid var(--accent);
   box-shadow: 0 8px 32px rgba(0,0,0,0.2), inset 0 2px 8px rgba(0,0,0,0.1), 0 0 20px var(--accent);
   backdrop-filter: blur(8px);
   position: relative;
   overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .ip-badge-large {
+    gap: 12px;
+    padding: 16px 24px;
+    border-radius: 16px;
+  }
 }
 
 .ip-badge-large::after {
