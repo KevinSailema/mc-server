@@ -6,14 +6,6 @@ const SERVER_HOST = "play.pollitoscraft.land";
 const SERVER_PORT = 25565;
 const TWITCH_CHANNEL = "nattsie";
 
-// GitHub Release URLs para archivos de descarga
-const GITHUB_RELEASE_BASE = "https://github.com/KevinSailema/mc-server/releases/download/v1.0";
-const DOWNLOAD_URLS = {
-  serverPack: `${GITHUB_RELEASE_BASE}/SERVER_1.20.1.zip`,
-  shaders: `${GITHUB_RELEASE_BASE}/ComplementaryShaders_v4.7.1.zip`,
-  forge: `${GITHUB_RELEASE_BASE}/forge-1.20.1-47.4.10-installer.jar`
-};
-
 // Traducciones
 const translations = {
   es: {
@@ -912,9 +904,8 @@ function Installation({ lang }) {
             <p className="text-sm mb-3 text-center" style={{ color: 'var(--text-main)', opacity: 0.7 }}>{t.serverPack.desc}</p>
             <div className="text-xs mb-4 text-center pill inline-block w-full">{t.serverPack.size}</div>
             <a 
-              href={DOWNLOAD_URLS.serverPack}
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/downloads/SERVER_1.20.1.zip" 
+              download
               className="block w-full text-center px-4 py-3 rounded-full border-2 font-semibold transition-all duration-300 hover:scale-105"
               style={{
                 backgroundColor: 'var(--accent)',
@@ -933,9 +924,8 @@ function Installation({ lang }) {
             <p className="text-sm mb-3 text-center" style={{ color: 'var(--text-main)', opacity: 0.7 }}>{t.shaders.desc}</p>
             <div className="text-xs mb-4 text-center pill inline-block w-full">{t.shaders.size}</div>
             <a 
-              href={DOWNLOAD_URLS.shaders}
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/downloads/ComplementaryShaders_v4.7.1.zip" 
+              download
               className="block w-full text-center px-4 py-3 rounded-full border-2 font-semibold transition-all duration-300 hover:scale-105"
               style={{
                 backgroundColor: 'var(--accent)',
@@ -954,9 +944,8 @@ function Installation({ lang }) {
             <p className="text-sm mb-3 text-center" style={{ color: 'var(--text-main)', opacity: 0.7 }}>{t.forge.desc}</p>
             <div className="text-xs mb-4 text-center pill inline-block w-full">{t.forge.size}</div>
             <a 
-              href={DOWNLOAD_URLS.forge}
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/downloads/forge-1.20.1-47.4.10-installer.jar" 
+              download
               className="block w-full text-center px-4 py-3 rounded-full border-2 font-semibold transition-all duration-300 hover:scale-105"
               style={{
                 backgroundColor: 'var(--accent)',

@@ -39,9 +39,6 @@ coverage/
 *.swp
 *.swo
 
-# Downloads (hosted in GitHub Releases)
-public/downloads/
-
 # Optional: lock files (if not using all)
 package-lock.json
 yarn.lock
