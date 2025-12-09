@@ -977,10 +977,9 @@ function Installation({ lang }) {
             <h3 className="font-bold text-lg sm:text-xl mb-2 text-center" style={{ color: 'var(--text-main)' }}>{t.serverPack.title}</h3>
             <p className="text-xs sm:text-sm mb-3 text-center" style={{ color: 'var(--text-main)', opacity: 0.7 }}>{t.serverPack.desc}</p>
             <div className="text-xs mb-4 text-center pill inline-block w-full">{t.serverPack.size}</div>
-            <a 
-              href={`${window.location.origin}/downloads/SERVER_1.20.1.zip`}
-              download="SERVER_1.20.1.zip"
-              className="block w-full text-center px-3 sm:px-4 py-2 sm:py-3 rounded-full border-2 font-semibold transition-all duration-300 hover:scale-105 text-sm sm:text-base cursor-pointer"
+            <a
+              href="/downloads/SERVER_1.20.1.zip"
+              className="block w-full text-center px-3 sm:px-4 py-2 sm:py-3 rounded-full border-2 font-semibold transition-all duration-300 hover:scale-105 text-sm sm:text-base cursor-pointer no-underline"
               style={{
                 backgroundColor: 'var(--accent)',
                 color: 'var(--bg-main)',
@@ -997,10 +996,9 @@ function Installation({ lang }) {
             <h3 className="font-bold text-lg sm:text-xl mb-2 text-center" style={{ color: 'var(--text-main)' }}>{t.shaders.title}</h3>
             <p className="text-xs sm:text-sm mb-3 text-center" style={{ color: 'var(--text-main)', opacity: 0.7 }}>{t.shaders.desc}</p>
             <div className="text-xs mb-4 text-center pill inline-block w-full">{t.shaders.size}</div>
-            <a 
-              href={`${window.location.origin}/downloads/ComplementaryShaders_v4.7.1.zip`}
-              download="ComplementaryShaders_v4.7.1.zip"
-              className="block w-full text-center px-3 sm:px-4 py-2 sm:py-3 rounded-full border-2 font-semibold transition-all duration-300 hover:scale-105 text-sm sm:text-base cursor-pointer"
+            <a
+              href="/downloads/ComplementaryShaders_v4.7.1.zip"
+              className="block w-full text-center px-3 sm:px-4 py-2 sm:py-3 rounded-full border-2 font-semibold transition-all duration-300 hover:scale-105 text-sm sm:text-base cursor-pointer no-underline"
               style={{
                 backgroundColor: 'var(--accent)',
                 color: 'var(--bg-main)',
@@ -1017,10 +1015,9 @@ function Installation({ lang }) {
             <h3 className="font-bold text-lg sm:text-xl mb-2 text-center" style={{ color: 'var(--text-main)' }}>{t.forge.title}</h3>
             <p className="text-xs sm:text-sm mb-3 text-center" style={{ color: 'var(--text-main)', opacity: 0.7 }}>{t.forge.desc}</p>
             <div className="text-xs mb-4 text-center pill inline-block w-full">{t.forge.size}</div>
-            <a 
-              href={`${window.location.origin}/downloads/forge-1.20.1-47.4.10-installer.jar`}
-              download="forge-1.20.1-47.4.10-installer.jar"
-              className="block w-full text-center px-3 sm:px-4 py-2 sm:py-3 rounded-full border-2 font-semibold transition-all duration-300 hover:scale-105 text-sm sm:text-base cursor-pointer"
+            <a
+              href="/downloads/forge-1.20.1-47.4.10-installer.jar"
+              className="block w-full text-center px-3 sm:px-4 py-2 sm:py-3 rounded-full border-2 font-semibold transition-all duration-300 hover:scale-105 text-sm sm:text-base cursor-pointer no-underline"
               style={{
                 backgroundColor: 'var(--accent)',
                 color: 'var(--bg-main)',
