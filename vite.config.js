@@ -16,9 +16,11 @@ export default defineConfig({
       output: {
         manualChunks: undefined
       }
-    }
+    },
+    // Asegurar que los archivos grandes se copien
+    assetsInlineLimit: 0,
+    copyPublicDir: true
   },
   // Asegurar que los archivos estáticos se copien correctamente
-  publicDir: 'public',
-  assetsInclude: ['**/*.zip', '**/*.jar']
+  publicDir: 'public'
 })
