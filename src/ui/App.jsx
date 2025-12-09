@@ -288,12 +288,20 @@ const translations = {
 
 
 export default function App() {
-  const [lang, setLang] = useState("es");
+  const [lang, setLang] = useState(() => {
+    // Detectar idioma del navegador
+    if (typeof window !== "undefined") {
+      const browserLang = navigator.language || navigator.userLanguage;
+      // Si el idioma del navegador comienza con 'es', usar español; de lo contrario, inglés
+      return browserLang.startsWith('es') ? 'es' : 'en';
+    }
+    return "es";
+  });
   const [theme, setTheme] = useState(() => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem("theme") || "dark";
+      return localStorage.getItem("theme") || "light";
     }
-    return "dark";
+    return "light";
   });
 
   useEffect(() => {
