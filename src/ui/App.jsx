@@ -28,7 +28,7 @@ const translations = {
     hero: {
       title1: "Pollitos",
       title2: "Craft",
-      subtitle: "Servidor Paper optimizado — Sobrevive, construye y comparte aventuras épicas",
+      subtitle: "Servidor Spigot optimizado — Sobrevive, construye y comparte aventuras épicas",
       customFeatures: "✨ Características Personalizadas",
       survival: "🌍 Supervivencia",
       online247: "🌍 24/7 En Línea",
@@ -45,7 +45,7 @@ const translations = {
       title: "Características del Servidor",
       subtitle: "Experiencia vanilla mejorada con protecciones y herramientas para la comunidad",
       paper: {
-        title: "Servidor Paper",
+        title: "Servidor Spigot",
         desc: "Rendimiento optimizado y mejor experiencia sin lag para todos los jugadores."
       },
       survival: {
@@ -77,7 +77,7 @@ const translations = {
       }
     },
     footer: {
-      serverName: "Servidor Paper de Minecraft",
+      serverName: "Servidor Spigot de Minecraft",
       copyright: "Pollitos Craft. No afiliado con Mojang.",
       madeWith: "By Nattsie"
     },
@@ -103,6 +103,10 @@ const translations = {
       title: "Instalación del Cliente",
       subtitle: "Descarga todo lo necesario para jugar en Pollitos Craft",
       description: "Sigue estos pasos para instalar el cliente modificado y unirte al servidor",
+      premiumNote: "✨ Para usuarios PREMIUM y NO PREMIUM",
+      nonPremiumInfo: "Si no tienes una cuenta premium de Minecraft, puedes usar",
+      launcherLink: "SKLauncher",
+      launcherDesc: "un launcher alternativo para jugar sin cuenta premium",
       serverPack: {
         title: "Server Pack 1.20.1",
         desc: "Cliente completo con mods y configuraciones optimizadas",
@@ -166,7 +170,7 @@ const translations = {
     hero: {
       title1: "Pollitos",
       title2: "Craft",
-      subtitle: "Optimized Paper Server — Survive, build and share epic adventures",
+      subtitle: "Optimized Spigot Server — Survive, build and share epic adventures",
       customFeatures: "✨ Custom Features",
       survival: "🌍 Survival",
       online247: "🌍 24/7 Online",
@@ -183,7 +187,7 @@ const translations = {
       title: "Server Features",
       subtitle: "Enhanced vanilla experience with protections and community tools",
       paper: {
-        title: "Paper Server",
+        title: "Spigot Server",
         desc: "Optimized performance and better lag-free experience for all players."
       },
       survival: {
@@ -215,7 +219,7 @@ const translations = {
       }
     },
     footer: {
-      serverName: "Minecraft Paper Server",
+      serverName: "Minecraft Spigot Server",
       copyright: "Pollitos Craft. Not affiliated with Mojang.",
       madeWith: "By Nattsie"
     },
@@ -241,6 +245,10 @@ const translations = {
       title: "Client Installation",
       subtitle: "Download everything you need to play on Pollitos Craft",
       description: "Follow these steps to install the modded client and join the server",
+      premiumNote: "✨ For PREMIUM and NON-PREMIUM users",
+      nonPremiumInfo: "If you don't have a premium Minecraft account, you can use",
+      launcherLink: "SKLauncher",
+      launcherDesc: "an alternative launcher to play without a premium account",
       serverPack: {
         title: "Server Pack 1.20.1",
         desc: "Complete client with optimized mods and configurations",
@@ -655,7 +663,7 @@ function Hero({ lang }) {
                       WebkitTextFillColor: 'transparent',
                       opacity: 0.7,
                       fontWeight: '900'
-                    }}>/70</span>
+                    }}>/50</span>
                   </div>
                   <div className="text-xs sm:text-sm font-semibold" style={{ color: 'var(--text-main)', opacity: 0.7 }}>{t.joinAdventure}</div>
                 </div>
@@ -707,6 +715,45 @@ function Hero({ lang }) {
 
 function TwitchStream({ lang, isLive = false }) {
   const t = translations[lang].stream;
+  const [iframeBlocked, setIframeBlocked] = React.useState(false);
+
+  React.useEffect(() => {
+    // Detectar Brave u otros bloqueadores
+    const isBrave = (navigator.brave && navigator.brave.isBrave) || false;
+    
+    // Crear elemento bait
+    const bait = document.createElement('div');
+    bait.setAttribute('class', 'pub_300x250 pub_300x250m pub_728x90 text-ad textAd text_ad text_ads text-ads text-ad-links ad ads advertisement banner-ad adsbox');
+    bait.setAttribute('style', 'width: 1px !important; height: 1px !important; position: absolute !important; left: -10000px !important; top: -1000px !important;');
+    document.body.appendChild(bait);
+
+    setTimeout(() => {
+      const computedStyle = window.getComputedStyle(bait);
+      const isHidden = computedStyle.display === 'none' 
+          || computedStyle.visibility === 'hidden'
+          || bait.offsetParent === null 
+          || bait.offsetHeight === 0
+          || bait.offsetWidth === 0;
+      
+      // Si es Brave O si el elemento está bloqueado
+      if (isBrave || isHidden) {
+        console.log('🚫 Ad Blocker detectado!', { isBrave, isHidden });
+        setIframeBlocked(true);
+      } else {
+        console.log('✅ No hay Ad Blocker');
+      }
+      
+      if (document.body.contains(bait)) {
+        document.body.removeChild(bait);
+      }
+    }, 100);
+
+    return () => {
+      if (document.body.contains(bait)) {
+        document.body.removeChild(bait);
+      }
+    };
+  }, []);
   
   return (
     <section id="stream" className="py-6 sm:py-8 md:py-12 relative overflow-hidden hero-gradient stars" style={{ backgroundColor: 'var(--bg-main)' }}>
@@ -742,28 +789,66 @@ function TwitchStream({ lang, isLive = false }) {
         {/* Contenedor del stream con chat */}
         <div className="grid lg:grid-cols-[1fr_340px] gap-4 sm:gap-6">
           {/* Player de Twitch */}
-          <div className="big-panel" style={{ padding: '0', overflow: 'hidden' }}>
+          <div className="big-panel relative" style={{ padding: '0', overflow: 'hidden', minHeight: '500px' }}>
             <iframe
-              src={`https://player.twitch.tv/?channel=${TWITCH_CHANNEL}&parent=${window.location.hostname}&muted=false`}
+              src={`https://player.twitch.tv/?channel=${TWITCH_CHANNEL}&parent=pollitoscraft.land&parent=www.pollitoscraft.land&parent=localhost`}
               width="100%"
+              height="100%"
               allowFullScreen
               frameBorder="0"
               scrolling="no"
-              style={{ borderRadius: '24px', display: 'block' }}
-              className="h-[300px] sm:h-[400px] md:h-[450px] lg:h-[500px]"
+              style={{ borderRadius: '24px', display: 'block', position: 'absolute', top: 0, left: 0, zIndex: 1 }}
+              className="w-full h-full"
               title="Twitch Stream"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             ></iframe>
+            {iframeBlocked && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center p-8" style={{ 
+                background: 'rgba(0, 0, 0, 0.3)',
+                backdropFilter: 'blur(1.5px)',
+                WebkitBackdropFilter: 'blur(1.5px)',
+                borderRadius: '24px',
+                zIndex: 9999
+              }}>
+                <div className="text-6xl mb-4">🚫</div>
+                <h3 className="text-xl font-bold mb-2 text-center text-white drop-shadow-lg">
+                  {lang === 'es' ? 'Bloqueador de Anuncios Detectado' : 'Ad Blocker Detected'}
+                </h3>
+                <p className="text-sm mb-6 text-center max-w-md text-white drop-shadow-lg">
+                  {lang === 'es' 
+                    ? 'Parece que tienes un bloqueador de anuncios activo. Por favor desactívalo para ver el stream, o ábrelo directamente en Twitch.'
+                    : 'It seems you have an ad blocker enabled. Please disable it to watch the stream, or open it directly on Twitch.'}
+                </p>
+                <a
+                  href={`https://www.twitch.tv/${TWITCH_CHANNEL}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full border-2 font-bold transition-all duration-300 hover:scale-105"
+                  style={{
+                    background: 'linear-gradient(135deg, #9146FF, #772CE8)',
+                    color: '#ffffff',
+                    borderColor: '#9146FF'
+                  }}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714z"/>
+                  </svg>
+                  {lang === 'es' ? 'Abrir en Twitch' : 'Open on Twitch'}
+                </a>
+              </div>
+            )}
           </div>
 
           {/* Chat de Twitch */}
-          <div className="big-panel hidden lg:block" style={{ padding: '0', overflow: 'hidden' }}>
+          <div className="big-panel relative hidden lg:block" style={{ padding: '0', overflow: 'hidden', minHeight: '500px' }}>
             <iframe
-              src={`https://www.twitch.tv/embed/${TWITCH_CHANNEL}/chat?parent=${window.location.hostname}&darkpopout&dark-theme=true`}
+              src={`https://www.twitch.tv/embed/${TWITCH_CHANNEL}/chat?parent=pollitoscraft.land&parent=www.pollitoscraft.land&parent=localhost&darkpopout`}
               width="100%"
+              height="100%"
               frameBorder="0"
               scrolling="no"
-              style={{ borderRadius: '24px', display: 'block' }}
-              className="h-[500px]"
+              style={{ borderRadius: '24px', display: 'block', position: 'absolute', top: 0, left: 0 }}
+              className="w-full h-full"
               title="Twitch Chat"
             ></iframe>
           </div>
@@ -967,6 +1052,44 @@ function Installation({ lang }) {
           <p className="max-w-2xl mx-auto mb-3 text-sm sm:text-base px-4" style={{ color: 'var(--text-main)', opacity: 0.7 }}>
             {t.subtitle}
           </p>
+          <div className="mt-4 mb-2">
+            <span className="pill text-sm sm:text-base">{t.premiumNote}</span>
+          </div>
+          <div className="max-w-3xl mx-auto mt-4 px-4">
+            <p className="text-center text-xs sm:text-sm leading-relaxed" style={{ color: 'var(--text-main)', opacity: 0.85 }}>
+              {t.nonPremiumInfo}{' '}
+              <a 
+                href="https://skmedix.pl/es" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 font-bold hover:scale-110 hover:shadow-2xl transition-all duration-300 px-5 py-2.5 rounded-xl whitespace-nowrap align-middle mx-1"
+                style={{ 
+                  color: '#ffffff',
+                  background: 'linear-gradient(135deg, #7c3aed, #6366f1)',
+                  textDecoration: 'none',
+                  boxShadow: '0 8px 24px rgba(124, 58, 237, 0.4)',
+                  border: '2px solid rgba(255, 255, 255, 0.15)',
+                  fontSize: '0.875rem',
+                  fontWeight: '700',
+                  letterSpacing: '0.025em',
+                  verticalAlign: 'middle'
+                }}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="7 10 12 15 17 10"></polyline>
+                  <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span>{t.launcherLink}</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+              </a>
+              {t.launcherDesc}
+            </p>
+          </div>
         </div>
 
         {/* Archivos descargables */}
