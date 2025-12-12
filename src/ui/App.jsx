@@ -162,7 +162,8 @@ const translations = {
         fishing: "🎣 Peces Pescados"
       },
       hoursLabel: "horas",
-      comingSoon: "Próximamente conectado con el servidor"
+      loadingMessage: "Cargando leaderboard...",
+      lastUpdated: "Última actualización:"
     }
   },
   en: {
@@ -318,7 +319,8 @@ const translations = {
         fishing: "🎣 Fish Caught"
       },
       hoursLabel: "hours",
-      comingSoon: "Coming soon - will connect to server"
+      loadingMessage: "Loading leaderboard...",
+      lastUpdated: "Last updated:"
     }
   }
 };
@@ -1218,20 +1220,35 @@ function Leaderboard({ lang }) {
   const [selectedCategory, setSelectedCategory] = useState('playtime');
   const [leaderboardData, setLeaderboardData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [lastUpdate, setLastUpdate] = useState(null);
   
   // Cargar datos del leaderboard
   useEffect(() => {
     const loadLeaderboard = async () => {
-      setLoading(true);
+      const isFirstLoad = leaderboardData === null;
+      if (isFirstLoad) setLoading(true);
+      
       const data = await fetchLeaderboardData();
-      setLeaderboardData(data);
-      setLoading(false);
+      
+      // Solo actualizar si hay cambios reales en los datos
+      const hasChanges = !leaderboardData || JSON.stringify(data) !== JSON.stringify(leaderboardData);
+      if (hasChanges) {
+        setLeaderboardData(data);
+        // Usar el timestamp del servidor si está disponible, sino usar hora local
+        if (data.lastUpdated) {
+          setLastUpdate(new Date(data.lastUpdated));
+        } else {
+          setLastUpdate(new Date());
+        }
+      }
+      
+      if (isFirstLoad) setLoading(false);
     };
     
     loadLeaderboard();
     
-    // Actualizar cada 5 minutos
-    const interval = setInterval(loadLeaderboard, 5 * 60 * 1000);
+    // Actualizar cada 30 segundos
+    const interval = setInterval(loadLeaderboard, 30 * 1000);
     return () => clearInterval(interval);
   }, []);
   
@@ -1271,9 +1288,11 @@ function Leaderboard({ lang }) {
           <p className="text-sm sm:text-base md:text-lg max-w-2xl mx-auto" style={{ color: 'var(--text-main)', opacity: 0.8 }}>
             {t.subtitle}
           </p>
-          <p className="text-xs sm:text-sm mt-2" style={{ color: 'var(--text-main)', opacity: 0.6 }}>
-            ⏰ {t.updated}
-          </p>
+          {lastUpdate && (
+            <p className="text-xs sm:text-sm mt-2" style={{ color: 'var(--text-main)', opacity: 0.6 }}>
+              ⏰ {t.lastUpdated} {lastUpdate.toLocaleString()}
+            </p>
+          )}
         </div>
 
         {/* Loading State */}
@@ -1281,7 +1300,7 @@ function Leaderboard({ lang }) {
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
             <p className="mt-4 text-sm" style={{ color: 'var(--text-main)', opacity: 0.7 }}>
-              Cargando leaderboard...
+              {t.loadingMessage}
             </p>
           </div>
         )}
@@ -1293,14 +1312,18 @@ function Leaderboard({ lang }) {
             <button
               key={cat.id}
               onClick={() => setSelectedCategory(cat.id)}
-              className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg font-semibold text-xs sm:text-sm transition-all duration-300 hover:scale-105 ${
+              className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl font-semibold text-xs sm:text-sm transition-all duration-300 hover:scale-110 active:scale-95 hover:animate-wiggle ${
                 selectedCategory === cat.id
-                  ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
-                  : 'bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10'
+                  ? 'bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 text-white shadow-2xl animate-pulse-slow'
+                  : 'bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 hover:border-purple-400/50'
               }`}
-              style={selectedCategory !== cat.id ? { color: 'var(--text-main)' } : {}}
+              style={selectedCategory === cat.id ? { 
+                boxShadow: '0 0 30px rgba(168, 85, 247, 0.6), 0 10px 20px rgba(0,0,0,0.3)' 
+              } : { 
+                color: 'var(--text-main)' 
+              }}
             >
-              {cat.label}
+              <span className={selectedCategory === cat.id ? 'animate-bounce-subtle' : ''}>{cat.label}</span>
             </button>
           ))}
         </div>
@@ -1314,23 +1337,79 @@ function Leaderboard({ lang }) {
               <div
                 key={`${player.username}-${index}`}
                 className={`
-                  relative overflow-hidden rounded-xl p-4 sm:p-5 transition-all duration-300 hover:scale-102 hover:-translate-y-1
-                  ${index === 0 ? 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border-2 border-yellow-400/50' : ''}
-                  ${index === 1 ? 'bg-gradient-to-r from-gray-400/20 to-gray-500/20 border-2 border-gray-400/50' : ''}
-                  ${index === 2 ? 'bg-gradient-to-r from-orange-700/20 to-orange-800/20 border-2 border-orange-600/50' : ''}
-                  ${index > 2 ? 'bg-white/5 backdrop-blur-sm border border-white/10' : ''}
+                  relative overflow-hidden rounded-2xl p-4 sm:p-5 transition-all duration-500 hover:scale-105 hover:-translate-y-2
+                  ${index === 0 ? 'bg-gradient-to-r from-yellow-400/30 via-yellow-500/20 to-orange-500/30 border-2 border-yellow-400/60 animate-pulse-slow' : ''}
+                  ${index === 1 ? 'bg-gradient-to-r from-gray-300/30 via-gray-400/20 to-gray-500/30 border-2 border-gray-400/60' : ''}
+                  ${index === 2 ? 'bg-gradient-to-r from-orange-600/30 via-orange-700/20 to-orange-800/30 border-2 border-orange-600/60' : ''}
+                  ${index > 2 ? 'bg-purple-100/60 dark:bg-white/5 backdrop-blur-sm border-2 border-purple-400/40 dark:border-white/10' : ''}
                 `}
                 style={{
-                  boxShadow: index < 3 ? '0 10px 30px rgba(0,0,0,0.3)' : 'none'
+                  boxShadow: index === 0 
+                    ? '0 15px 40px rgba(251, 191, 36, 0.4), 0 0 50px rgba(251, 191, 36, 0.2)' 
+                    : index < 3 
+                    ? '0 10px 30px rgba(0,0,0,0.3)' 
+                    : '0 5px 15px rgba(0,0,0,0.1)',
+                  animation: index < 3 ? `float ${3 + index}s ease-in-out infinite` : undefined,
+                  animationDelay: `${index * 0.1}s`
                 }}
               >
-                <div className="flex items-center justify-between gap-4">
+                {/* Sparkles for first place */}
+                {index === 0 && (
+                  <>
+                    <div className="absolute top-2 left-4 text-yellow-400 text-xl animate-pulse">✨</div>
+                    <div className="absolute top-4 right-8 text-yellow-300 text-sm animate-bounce-subtle">⭐</div>
+                    <div className="absolute bottom-3 left-12 text-orange-400 text-xs animate-pulse-slow">💫</div>
+                    <div className="absolute bottom-2 right-16 text-yellow-400 text-lg animate-float">✨</div>
+                  </>
+                )}
+                {/* Stars for second place */}
+                {index === 1 && (
+                  <>
+                    <div className="absolute top-3 right-10 text-gray-300 text-sm animate-pulse">⭐</div>
+                    <div className="absolute bottom-3 left-10 text-gray-400 text-xs animate-bounce-subtle">✨</div>
+                  </>
+                )}
+                {/* Bronze sparkle for third */}
+                {index === 2 && (
+                  <div className="absolute top-3 right-12 text-orange-400 text-sm animate-pulse">💫</div>
+                )}
+                
+                <div className="flex items-center justify-between gap-4 relative z-10">
                   <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
-                    <div className="text-2xl sm:text-3xl font-bold flex-shrink-0">
+                    <div 
+                      className={`text-2xl sm:text-3xl font-bold flex-shrink-0 ${index === 0 ? 'animate-bounce-subtle' : ''}`}
+                      style={index > 2 ? { color: 'var(--accent)' } : {}}
+                    >
                       {getMedalEmoji(index)}
                     </div>
-                    <div className="text-3xl sm:text-4xl flex-shrink-0">
-                      {player.avatar}
+                    <div className="flex-shrink-0 relative">
+                      {player.avatar.startsWith('http') ? (
+                        <img 
+                          src={player.avatar} 
+                          alt={player.username}
+                          className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl border-2 transition-all duration-300 hover:scale-125 hover:rotate-12 ${
+                            index === 0 ? 'border-yellow-400 shadow-lg shadow-yellow-400/50' :
+                            index === 1 ? 'border-gray-400 shadow-lg shadow-gray-400/50' :
+                            index === 2 ? 'border-orange-600 shadow-lg shadow-orange-600/50' :
+                            'border-purple-400/40'
+                          }`}
+                          style={{ imageRendering: 'pixelated' }}
+                          onError={(e) => {
+                            // Fallback a minotar si crafatar falla
+                            if (e.target.src.includes('crafatar')) {
+                              e.target.src = `https://minotar.net/helm/${player.username}/100.png`;
+                            } else if (e.target.src.includes('minotar')) {
+                              // Fallback a mc-heads si minotar falla
+                              e.target.src = `https://mc-heads.net/avatar/${player.uuid}/100`;
+                            } else {
+                              // Si todo falla, mostrar emoji por defecto
+                              e.target.style.display = 'none';
+                              e.target.nextSibling?.classList.remove('hidden');
+                            }
+                          }}
+                        />
+                      ) : null}
+                      <div className={`text-3xl sm:text-4xl ${player.avatar.startsWith('http') ? 'hidden' : ''}`}>👤</div>
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="font-bold text-base sm:text-lg truncate" style={{ color: 'var(--text-main)' }}>
@@ -1349,15 +1428,6 @@ function Leaderboard({ lang }) {
                 </div>
               </div>
             ))}
-          </div>
-          
-          {/* Coming Soon Notice */}
-          <div className="mt-8 text-center">
-            <div className="inline-block px-4 sm:px-6 py-3 sm:py-4 rounded-lg bg-purple-500/10 border border-purple-500/30 backdrop-blur-sm">
-              <p className="text-xs sm:text-sm font-semibold" style={{ color: 'var(--text-main)' }}>
-                ℹ️ {t.comingSoon}
-              </p>
-            </div>
           </div>
         </div>
         )}

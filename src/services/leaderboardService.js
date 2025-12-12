@@ -1,10 +1,38 @@
 // Servicio para obtener datos del leaderboard desde la API de Minecraft
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4567';
 const API_KEY = import.meta.env.VITE_API_KEY || '';
-const CACHE_TIME = 5 * 60 * 1000; // 5 minutos
+const CACHE_TIME = 30 * 1000; // 30 segundos
+const STORAGE_KEY = 'minecraft_leaderboard_backup';
 
 let cache = null;
 let lastFetch = 0;
+
+// Guardar datos en localStorage como respaldo
+function saveBackupData(data) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      data,
+      timestamp: Date.now()
+    }));
+  } catch (error) {
+    console.warn('Could not save backup data to localStorage:', error);
+  }
+}
+
+// Obtener datos de respaldo de localStorage
+function getBackupData() {
+  try {
+    const backup = localStorage.getItem(STORAGE_KEY);
+    if (backup) {
+      const { data, timestamp } = JSON.parse(backup);
+      console.log('Using backup data from localStorage (saved:', new Date(timestamp).toLocaleString(), ')');
+      return data;
+    }
+  } catch (error) {
+    console.warn('Could not retrieve backup data:', error);
+  }
+  return null;
+}
 
 export async function fetchLeaderboardData() {
   const now = Date.now();
@@ -26,18 +54,25 @@ export async function fetchLeaderboardData() {
 
     const data = await response.json();
 
-    const hasData = Object.values(data).some(arr => arr.length > 0);
+    // Verificar si hay datos (excluyendo lastUpdated del chequeo)
+    const { lastUpdated, ...categories } = data;
+    const hasData = Object.values(categories).some(arr => Array.isArray(arr) && arr.length > 0);
+    
     if (!hasData) {
-      console.warn('No data from API, using mock data');
-      return getMockData();
+      console.warn('No data from API, using backup or mock data');
+      return getBackupData() || getMockData();
     }
 
+    // Guardar datos exitosos como respaldo
+    saveBackupData(data);
+    
     cache = data;
     lastFetch = now;
     return data;
   } catch (error) {
     console.error('Error fetching leaderboard data:', error);
-    return getMockData();
+    // Primero intentar usar datos de respaldo, si no hay usar mock
+    return getBackupData() || getMockData();
   }
 }
 

@@ -198,8 +198,12 @@ app.get('/v1/leaderboards', authenticate, async (req, res) => {
       results[category] = leaderboard;
     }
 
-    cache.set(cacheKey, results);
-    res.json(results);
+    const responseData = {
+      ...results,
+      lastUpdated: new Date().toISOString()
+    };
+    cache.set(cacheKey, responseData);
+    res.json(responseData);
   } catch (error) {
     console.error('Error generating all leaderboards:', error);
     res.status(500).json({ error: 'Failed to generate leaderboards' });
@@ -243,22 +247,13 @@ async function generateLeaderboard(category, limit) {
         username: player.name,
         uuid: player.uuid,
         value: value,
-        avatar: getPlayerAvatar(player.name)
+        avatar: `https://crafatar.com/avatars/${player.uuid}?size=100&overlay`
       });
     }
   }
 
   leaderboard.sort((a, b) => b.value - a.value);
   return leaderboard.slice(0, limit);
-}
-
-// Avatar por jugador
-function getPlayerAvatar(username) {
-  const avatars = {
-    'Nattsie': '🦊',
-    'default': '👤'
-  };
-  return avatars[username] || avatars.default;
 }
 
 // Health check
