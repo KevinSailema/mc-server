@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from "react-router-dom";
 import logoSrc from "../logo.png";
+import { fetchLeaderboardData } from "../services/leaderboardService";
 
 const SERVER_HOST = "play.pollitoscraft.land";
 const SERVER_PORT = 25565;
@@ -148,6 +149,20 @@ const translations = {
           desc: "Abre Minecraft Launcher, selecciona el perfil Forge y conecta a play.pollitoscraft.land:25565"
         }
       }
+    },
+    leaderboard: {
+      title: "Top Jugadores",
+      subtitle: "Los mejores de la semana",
+      updated: "Actualizado semanalmente",
+      categories: {
+        playtime: "⏱️ Más Tiempo Jugado",
+        kills: "⚔️ Más Kills",
+        mined: "⛏️ Bloques Minados",
+        crafted: "🔨 Items Crafteados",
+        fishing: "🎣 Peces Pescados"
+      },
+      hoursLabel: "horas",
+      comingSoon: "Próximamente conectado con el servidor"
     }
   },
   en: {
@@ -290,6 +305,20 @@ const translations = {
           desc: "Open Minecraft Launcher, select Forge profile and connect to play.pollitoscraft.land:25565"
         }
       }
+    },
+    leaderboard: {
+      title: "Top Players",
+      subtitle: "Best of the week",
+      updated: "Updated weekly",
+      categories: {
+        playtime: "⏱️ Most Playtime",
+        kills: "⚔️ Most Kills",
+        mined: "⛏️ Blocks Mined",
+        crafted: "🔨 Items Crafted",
+        fishing: "🎣 Fish Caught"
+      },
+      hoursLabel: "hours",
+      comingSoon: "Coming soon - will connect to server"
     }
   }
 };
@@ -364,6 +393,7 @@ function HomePage({ lang, setLang, theme, setTheme }) {
       <Hero lang={lang} />
       <TwitchStream lang={lang} isLive={isLive} />
       <Features lang={lang} />
+      <Leaderboard lang={lang} />
       <Cards lang={lang} />
       <Footer lang={lang} />
     </>
@@ -1178,6 +1208,159 @@ function Installation({ lang }) {
             </div>
           </div>
         </div>
+      </div>
+    </section>
+  );
+}
+
+function Leaderboard({ lang }) {
+  const t = translations[lang].leaderboard;
+  const [selectedCategory, setSelectedCategory] = useState('playtime');
+  const [leaderboardData, setLeaderboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
+  // Cargar datos del leaderboard
+  useEffect(() => {
+    const loadLeaderboard = async () => {
+      setLoading(true);
+      const data = await fetchLeaderboardData();
+      setLeaderboardData(data);
+      setLoading(false);
+    };
+    
+    loadLeaderboard();
+    
+    // Actualizar cada 5 minutos
+    const interval = setInterval(loadLeaderboard, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+  
+  const currentData = leaderboardData?.[selectedCategory] || [];
+  
+  const categories = [
+    { id: 'playtime', label: t.categories.playtime },
+    { id: 'kills', label: t.categories.kills },
+    { id: 'mined', label: t.categories.mined },
+    { id: 'crafted', label: t.categories.crafted },
+    { id: 'fishing', label: t.categories.fishing }
+  ];
+  
+  const getMedalEmoji = (index) => {
+    if (index === 0) return "🥇";
+    if (index === 1) return "🥈";
+    if (index === 2) return "🥉";
+    return `#${index + 1}`;
+  };
+  
+  const formatValue = (value, category) => {
+    if (category === 'playtime') {
+      return `${value} ${t.hoursLabel}`;
+    }
+    return value.toLocaleString();
+  };
+
+  return (
+    <section id="leaderboard" className="relative py-12 sm:py-16 md:py-20 overflow-hidden" style={{ backgroundColor: 'var(--bg-main)' }}>
+      <div className="max-w-6xl mx-auto px-3 sm:px-4">
+        <div className="text-center mb-8 sm:mb-10 md:mb-12 animate-fade-in">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-3 sm:mb-4">
+            <span className="bg-gradient-to-r from-yellow-400 via-orange-400 to-pink-400 bg-clip-text text-transparent drop-shadow-lg">
+              {t.title}
+            </span>
+          </h2>
+          <p className="text-sm sm:text-base md:text-lg max-w-2xl mx-auto" style={{ color: 'var(--text-main)', opacity: 0.8 }}>
+            {t.subtitle}
+          </p>
+          <p className="text-xs sm:text-sm mt-2" style={{ color: 'var(--text-main)', opacity: 0.6 }}>
+            ⏰ {t.updated}
+          </p>
+        </div>
+
+        {/* Loading State */}
+        {loading && (
+          <div className="text-center py-12">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+            <p className="mt-4 text-sm" style={{ color: 'var(--text-main)', opacity: 0.7 }}>
+              Cargando leaderboard...
+            </p>
+          </div>
+        )}
+
+        {/* Category Tabs */}
+        {!loading && (
+        <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-8 sm:mb-10 animate-slide-up">
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => setSelectedCategory(cat.id)}
+              className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg font-semibold text-xs sm:text-sm transition-all duration-300 hover:scale-105 ${
+                selectedCategory === cat.id
+                  ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
+                  : 'bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10'
+              }`}
+              style={selectedCategory !== cat.id ? { color: 'var(--text-main)' } : {}}
+            >
+              {cat.label}
+            </button>
+          ))}
+        </div>
+        )}
+
+        {/* Leaderboard List */}
+        {!loading && (
+        <div className="max-w-3xl mx-auto animate-fade-in-delay">
+          <div className="space-y-3 sm:space-y-4">
+            {currentData.map((player, index) => (
+              <div
+                key={`${player.username}-${index}`}
+                className={`
+                  relative overflow-hidden rounded-xl p-4 sm:p-5 transition-all duration-300 hover:scale-102 hover:-translate-y-1
+                  ${index === 0 ? 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border-2 border-yellow-400/50' : ''}
+                  ${index === 1 ? 'bg-gradient-to-r from-gray-400/20 to-gray-500/20 border-2 border-gray-400/50' : ''}
+                  ${index === 2 ? 'bg-gradient-to-r from-orange-700/20 to-orange-800/20 border-2 border-orange-600/50' : ''}
+                  ${index > 2 ? 'bg-white/5 backdrop-blur-sm border border-white/10' : ''}
+                `}
+                style={{
+                  boxShadow: index < 3 ? '0 10px 30px rgba(0,0,0,0.3)' : 'none'
+                }}
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                    <div className="text-2xl sm:text-3xl font-bold flex-shrink-0">
+                      {getMedalEmoji(index)}
+                    </div>
+                    <div className="text-3xl sm:text-4xl flex-shrink-0">
+                      {player.avatar}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-bold text-base sm:text-lg truncate" style={{ color: 'var(--text-main)' }}>
+                        {player.username}
+                      </div>
+                      <div className="text-xs sm:text-sm" style={{ color: 'var(--text-main)', opacity: 0.6 }}>
+                        {formatValue(player.value, selectedCategory)}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    <div className="text-2xl sm:text-3xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                      {formatValue(player.value, selectedCategory)}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          {/* Coming Soon Notice */}
+          <div className="mt-8 text-center">
+            <div className="inline-block px-4 sm:px-6 py-3 sm:py-4 rounded-lg bg-purple-500/10 border border-purple-500/30 backdrop-blur-sm">
+              <p className="text-xs sm:text-sm font-semibold" style={{ color: 'var(--text-main)' }}>
+                ℹ️ {t.comingSoon}
+              </p>
+            </div>
+          </div>
+        </div>
+        )}
       </div>
     </section>
   );

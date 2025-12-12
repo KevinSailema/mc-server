@@ -1,0 +1,165 @@
+# 📝 Configuración de ServerTap
+# Copia este contenido a: plugins/ServerTap/config.yml
+
+# ===========================================
+# Configuración del Servidor Web
+# ===========================================
+
+server:
+  # Puerto donde ServerTap escuchará
+  port: 4567
+  
+  # Host (0.0.0.0 = todas las interfaces)
+  host: '0.0.0.0'
+  
+  # Mostrar logs detallados
+  verbose: true
+
+# ===========================================
+# CORS (Cross-Origin Resource Sharing)
+# ===========================================
+
+cors:
+  # Habilitar CORS (IMPORTANTE para que tu web funcione)
+  enabled: true
+  
+  # Dominios permitidos
+  origins:
+    - 'https://pollitoscraft.land'
+    - 'https://www.pollitoscraft.land'
+    - 'http://pollitoscraft.land'
+    - 'http://www.pollitoscraft.land'
+    - 'http://localhost:5173'  # Para desarrollo con Vite
+    - 'http://localhost:3000'  # Para desarrollo con otros frameworks
+    - 'http://127.0.0.1:5173'
+    - '*'  # TEMPORAL: permite todos (quitar en producción)
+
+# ===========================================
+# Seguridad
+# ===========================================
+
+security:
+  # API Key para proteger los endpoints
+  # GENERA UNA CLAVE SEGURA CON: openssl rand -hex 32
+  api-key: 'pollitos-craft-api-key-change-me-2024'
+  
+  # Requerir API key para todos los endpoints
+  require-api-key: true
+  
+  # IPs permitidas (dejar vacío para permitir todas)
+  allowed-ips: []
+  # Ejemplo:
+  # allowed-ips:
+  #   - '127.0.0.1'
+  #   - 'tu-ip-del-servidor-web'
+
+# ===========================================
+# Logging
+# ===========================================
+
+logging:
+  # Habilitar logs
+  enabled: true
+  
+  # Nivel de logging: DEBUG, INFO, WARN, ERROR
+  level: 'INFO'
+  
+  # Log de requests
+  log-requests: true
+
+# ===========================================
+# Endpoints Habilitados
+# ===========================================
+
+endpoints:
+  # Información de jugadores
+  players: true
+  
+  # Información del servidor
+  server: true
+  
+  # Información de mundos
+  worlds: true
+  
+  # Comandos (NECESARIO para ajLeaderboards)
+  commands: true
+  
+  # Plugins
+  plugins: true
+  
+  # Economía (requiere Vault)
+  economy: false
+  
+  # Whitelist
+  whitelist: false
+  
+  # Bans
+  bans: false
+  
+  # Operadores
+  ops: false
+  
+  # Chat
+  chat: false
+
+# ===========================================
+# Rate Limiting
+# ===========================================
+
+rate-limit:
+  # Habilitar rate limiting
+  enabled: true
+  
+  # Requests por minuto por IP
+  requests-per-minute: 60
+  
+  # Mensaje cuando se excede el límite
+  message: 'Too many requests. Please try again later.'
+
+# ===========================================
+# Caché
+# ===========================================
+
+cache:
+  # Habilitar caché
+  enabled: true
+  
+  # Tiempo de caché en segundos
+  ttl: 30
+  
+  # Caché para endpoints específicos
+  player-list: 30
+  server-info: 60
+  worlds: 120
+
+# ===========================================
+# Webhooks (Opcional)
+# ===========================================
+
+webhooks:
+  enabled: false
+  
+  # Eventos que disparan webhooks
+  events:
+    player-join: false
+    player-quit: false
+    player-death: false
+    server-start: false
+    server-stop: false
+
+# ===========================================
+# Configuración Avanzada
+# ===========================================
+
+advanced:
+  # Thread pool size
+  thread-pool-size: 10
+  
+  # Timeout de requests (en segundos)
+  timeout: 30
+  
+  # Máximo de conexiones simultáneas
+  max-connections: 100
+  
+  # Comprimir respuestas
+  compression: true
